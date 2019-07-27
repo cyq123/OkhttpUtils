@@ -1,4 +1,4 @@
-package com.cyq.myokhttp;
+package com.cyq.okhttputils;
 
 import android.text.TextUtils;
 
