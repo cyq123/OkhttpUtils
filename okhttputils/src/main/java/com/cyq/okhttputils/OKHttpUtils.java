@@ -49,9 +49,9 @@ public class OKHttpUtils {
             Response response = call.execute();
 
             if (response.isSuccessful()) {
-                this.callback.onResponse(call,response);//回调请求结果
+                this.callback.onResponse(response.body().string());//回调请求结果
             }else{
-                this.callback.onFailure(call,new IOException(response.message()));
+                this.callback.onFailure(response.message());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -205,19 +205,22 @@ public class OKHttpUtils {
     private Callback myCallback = new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
-            if (callback!=null)callback.onFailure(call,e);
+            if (callback!=null)callback.onFailure(e.getMessage());
         }
 
         @Override
         public void onResponse(Call call, Response response) throws IOException {
-            if (callback!=null)callback.onResponse(call,response);
+            if (response.isSuccessful()) {
+                String result = response.body().string();
+                if (callback!=null)callback.onResponse(result);
+            }
         }
     };
 
     private HttpCallback callback;
     public interface HttpCallback {
-        void onFailure(Call call, IOException e);
-        void onResponse(Call call, Response response);
+        void onFailure(String err);
+        void onResponse(String result);
     }
 
     public void setSyncCallback(HttpCallback callback){
